@@ -46,6 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
   double _result = 0;
   String changeValue = "";
   
+  List<String> listViewItem = <String>[];
+
   var listItem = [
     "Kelvin",
     "Reamur",
@@ -60,6 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _result = (4/5) * _inputuser;
       }
     });
+    listViewItem.add(_result.toString());
   }
 
   void _incrementCounter() {
@@ -131,9 +134,20 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Expanded(
               child: ListView(
-
-              ),
-            ),
+                children: listViewItem.map((String value){
+                      return Container(
+                        margin: EdgeInsets.all(10),
+                        child: Text(
+                        value ,
+                        style: TextStyle(fontSize: 15),
+                        ));
+                }).toList(),
+                
+              
+              )
+              ),  
+                  // 
+        
           ],
         ),
       
