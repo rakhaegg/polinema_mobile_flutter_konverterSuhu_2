@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,19 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+      
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -49,6 +38,29 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  double _inputuser = 0;
+  double _kevin = 0;
+  double _reamur = 0;
+  final inputController = TextEditingController();
+  String newValue = "Kelvin";
+  double _result = 0;
+  String changeValue = "";
+  
+  var listItem = [
+    "Kelvin",
+    "Reamur",
+  ];
+  void perhitunganSuhu(){
+    setState(() {
+      _inputuser = double.parse(inputController.text);
+
+      if(newValue == "Kelvin"){
+        _result = _inputuser + 273;
+      }else{
+        _result = (4/5) * _inputuser;
+      }
+    });
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -75,41 +87,130 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Container(
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Container(
+              child : Input(myController: inputController,),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            Container(
+              child: DropdownButton<String>(items: 
+                listItem.map((String value){
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                }).toList(),
+                
+                /*
+                [
+                DropdownMenuItem(
+                  value: "Kelvin" , child: Container(child: Text("Kelvin"),),),
+                DropdownMenuItem(
+                  value: "Reamur", child: Container(child: Text("Reamur"),),)
+              ],
+              */
+              value: newValue,
+              onChanged: (String? changeValue){
+                setState(() {
+                  newValue = changeValue!;
+                  perhitunganSuhu();
+                });
+              }
+              ),
+            ),
+            Result(result: _result,),
+            SizedBox(
+              child: Container(
+                child: Convert(konvertHandler: perhitunganSuhu ,)
+              ),
+            ),
+            Container(
+              child: Text("Riwayat Konversi"
+              )
+            ),
+            Expanded(
+              child: ListView(
+
+              ),
             ),
           ],
         ),
+      
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+  
+    );
+  }
+}
+
+class Convert extends StatelessWidget {
+  const Convert({
+    Key? key,
+    required this.konvertHandler,
+  }) : super(key: key);
+  
+  final Function konvertHandler;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      style:  TextButton.styleFrom(
+        backgroundColor: Colors.blueAccent
+      ),
+      onPressed: (){
+        konvertHandler();
+      },
+      child: Text("Konversi Suhu",
+      style: TextStyle(color: Colors.white),
+      
+      ),
+    );
+  }
+}
+
+class Input extends StatelessWidget {
+  const Input({
+    Key? key,
+    required this.myController,
+  }) : super(key: key);
+  
+  final TextEditingController myController;
+  
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: myController,
+      decoration: InputDecoration(
+        hintText: "Masukkan Nilai "
+      ),
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+      ],
+      keyboardType: TextInputType.number,
+    );
+  }
+}
+
+class Result extends StatelessWidget {
+  const Result({
+    Key? key,
+    required this.result,
+  }) : super(key: key);
+
+  final double result;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Text("Hasil", 
+          style: TextStyle(fontSize: 20),
+          ),
+          Text(result.toStringAsFixed(1),
+          style: TextStyle(fontSize: 30),
+          ),
+        ],
+      ),
     );
   }
 }
